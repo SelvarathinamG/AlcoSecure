@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - EthanolTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-qrcode"></i> EthanolTrack
+            </a>
+            <div class="navbar-text text-white me-3">
+                <i class="fas fa-user-circle"></i> <span id="userName"></span>
+            </div>
+            <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active" onclick="showSection('dashboard')">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('qrcode')">
+                        <i class="fas fa-qrcode"></i> My QR Code
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('consumption')">
+                        <i class="fas fa-chart-bar"></i> Consumption
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('transactions')">
+                        <i class="fas fa-history"></i> Transaction History
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('profile')">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="content-section">
+                    <h2 class="mb-4"><i class="fas fa-home"></i> Dashboard</h2>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card stat-card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-tint fa-3x text-primary mb-2"></i>
+                                    <h6 class="text-muted">Today's Consumption</h6>
+                                    <h3 id="todayConsumption">0g</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-chart-line fa-3x text-success mb-2"></i>
+                                    <h6 class="text-muted">Total Transactions</h6>
+                                    <h3 id="totalTransactions">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-check-circle fa-3x text-info mb-2"></i>
+                                    <h6 class="text-muted">Approved</h6>
+                                    <h3 id="approvedCount">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-times-circle fa-3x text-danger mb-2"></i>
+                                    <h6 class="text-muted">Rejected</h6>
+                                    <h3 id="rejectedCount">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consumption Progress -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-thermometer-half"></i> Daily Consumption Limit</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><strong>Consumed:</strong> <span id="consumedAmount">0g</span></span>
+                                <span><strong>Limit:</strong> <span id="dailyLimit">60g</span></span>
+                                <span><strong>Remaining:</strong> <span id="remainingAmount">60g</span></span>
+                            </div>
+                            <div class="progress" style="height: 30px;">
+                                <div id="consumptionProgress" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+                            </div>
+                            <p class="text-muted mt-2 small">
+                                <i class="fas fa-info-circle"></i> Limit resets automatically after 24 hours
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Transactions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recentTransactions" class="table-responsive">
+                                <p class="text-center text-muted">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div id="qrcodeSection" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-qrcode"></i> My QR Code</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <div id="qrCodeDisplay" class="mb-3">
+                                        <p class="text-muted">Loading QR Code...</p>
+                                    </div>
+                                    <h5>Your User ID: <span id="displayUserId" class="badge bg-primary"></span></h5>
+                                    <p class="text-muted">Show this QR code to vendors when making purchases</p>
+                                    <button class="btn btn-success" onclick="downloadQRCode()">
+                                        <i class="fas fa-download"></i> Download QR Code
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consumption Section -->
+                <div id="consumptionSection" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Consumption Details</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Current Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Consumed Today:</th>
+                                            <td><strong id="consumptionToday">0g</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Daily Limit:</th>
+                                            <td><strong id="consumptionLimit">60g</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Remaining:</th>
+                                            <td><strong id="consumptionRemaining">60g</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Percentage Used:</th>
+                                            <td><strong id="consumptionPercent">0%</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Last Reset:</th>
+                                            <td><strong id="lastReset">-</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6><i class="fas fa-calculator"></i> How it's Calculated:</h6>
+                                    <p class="small">Pure Alcohol (grams) = Volume (ml) × Alcohol % × 0.789</p>
+                                    <hr>
+                                    <h6><i class="fas fa-lightbulb"></i> Examples:</h6>
+                                    <ul class="small">
+                                        <li>Beer (330ml, 5%) = 13g pure alcohol</li>
+                                        <li>Wine (150ml, 12%) = 14.2g pure alcohol</li>
+                                        <li>Whisky (60ml, 40%) = 18.9g pure alcohol</li>
+                                    </ul>
+                                    <hr>
+                                    <h6><i class="fas fa-info-circle"></i> Health Guidelines:</h6>
+                                    <p class="small">The default daily limit is set based on health recommendations. Responsible drinking promotes better health.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Section -->
+                <div id="transactionsSection" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-history"></i> Transaction History</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="transactionsList" class="table-responsive">
+                                <p class="text-center text-muted">Loading transactions...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profileSection" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-user"></i> Profile</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">User Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Name:</th>
+                                            <td id="profileName">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email:</th>
+                                            <td id="profileEmail">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th>User ID:</th>
+                                            <td><span id="profileUserId" class="badge bg-primary"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Member Since:</th>
+                                            <td id="profileCreatedAt">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status:</th>
+                                            <td><span id="profileStatus" class="badge bg-success">Active</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/user-dashboard.js"></script>
+</body>
+</html>
