@@ -1,6 +1,6 @@
-# API Documentation - EthanolTrack
+# API Documentation - AlcoSecure
 
-Complete API reference for the EthanolTrack QR-Based Alcohol Monitoring System.
+Complete API reference for the AlcoSecure QR-Based Alcohol Monitoring System.
 
 ## Base URL
 
@@ -171,7 +171,7 @@ Authenticate admin user.
 **Request Body:**
 ```json
 {
-  "email": "admin@ethanoltrack.com",
+  "email": "admin@alcosecure.com",
   "password": "admin123"
 }
 ```

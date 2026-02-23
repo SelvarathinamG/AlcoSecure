@@ -45,15 +45,15 @@ const checkDailyLimit = (consumedToday, newAlcoholGrams, dailyLimit) => {
 };
 
 /**
- * Check if 24 hours have passed since last reset
+ * Check if 20 hours have passed since last reset
  * 
  * @param {Date} lastResetDate - Last reset date
- * @returns {boolean} True if 24 hours have passed
+ * @returns {boolean} True if 20 hours have passed
  */
 const shouldResetConsumption = (lastResetDate) => {
   const now = new Date();
   const hoursSinceReset = (now - new Date(lastResetDate)) / (1000 * 60 * 60);
-  return hoursSinceReset >= 24;
+  return hoursSinceReset >= 20;
 };
 
 module.exports = {

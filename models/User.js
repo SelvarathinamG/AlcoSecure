@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema({
     default: 0, // In grams of pure alcohol
     min: 0
   },
+  totalSpentToday: {
+    type: Number,
+    default: 0, // Total money spent today
+    min: 0
+  },
   lastResetDate: {
     type: Date,
     default: Date.now

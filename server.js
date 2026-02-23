@@ -1,6 +1,6 @@
 /**
  * Main Server File
- * Entry point for the EthanolTrack application
+ * Entry point for the AlcoSecure application
  */
 
 require('dotenv').config();
@@ -69,7 +69,7 @@ const server = app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║        🍺 EthanolTrack Server Running 🍺              ║
+║        🍺 AlcoSecure Server Running 🍺                ║
 ║                                                       ║
 ║   Port: ${PORT}                                       ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                              ║

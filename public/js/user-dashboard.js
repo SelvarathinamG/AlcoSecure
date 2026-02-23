@@ -80,12 +80,14 @@ async function loadDashboard() {
         const consumptionData = await consumptionResponse.json();
 
         if (consumptionData.success) {
-            const { consumedToday, dailyLimit, remaining, percentageUsed } = consumptionData.data;
+            const { consumedToday, dailyLimit, remaining, percentageUsed, totalSpentToday } = consumptionData.data;
             
             document.getElementById('todayConsumption').textContent = consumedToday.toFixed(2) + 'g';
             document.getElementById('consumedAmount').textContent = consumedToday.toFixed(2) + 'g';
             document.getElementById('dailyLimit').textContent = dailyLimit + 'g';
             document.getElementById('remainingAmount').textContent = remaining.toFixed(2) + 'g';
+            document.getElementById('todaySpent').textContent = '₹' + (totalSpentToday || 0).toFixed(2);
+            document.getElementById('spentAmount').textContent = (totalSpentToday || 0).toFixed(2);
             
             const progressBar = document.getElementById('consumptionProgress');
             progressBar.style.width = percentageUsed + '%';
@@ -115,6 +117,7 @@ async function loadDashboard() {
                             <th>Liquor</th>
                             <th>Volume</th>
                             <th>Pure Alcohol</th>
+                            <th>Price</th>
                             <th>Vendor</th>
                             <th>Status</th>
                         </tr>
@@ -126,6 +129,7 @@ async function loadDashboard() {
                                 <td>${t.liquorType.name}</td>
                                 <td>${t.volumeMl}ml</td>
                                 <td>${t.pureAlcoholGrams.toFixed(2)}g</td>
+                                <td><strong>₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                 <td>${t.vendor.shopName}</td>
                                 <td><span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">${t.status.toUpperCase()}</span></td>
                             </tr>
@@ -216,6 +220,7 @@ async function loadTransactions() {
                             <th>Volume</th>
                             <th>Alcohol %</th>
                             <th>Pure Alcohol</th>
+                            <th>Price</th>
                             <th>Vendor</th>
                             <th>Status</th>
                         </tr>
@@ -230,6 +235,7 @@ async function loadTransactions() {
                                 <td>${t.volumeMl}ml</td>
                                 <td>${t.alcoholPercentage}%</td>
                                 <td><strong>${t.pureAlcoholGrams.toFixed(2)}g</strong></td>
+                                <td><strong class="text-warning">₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                 <td>${t.vendor.shopName}</td>
                                 <td>
                                     <span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">

@@ -66,6 +66,7 @@ async function loadDashboard() {
             document.getElementById('approvedCount').textContent = statsData.data.approvedTransactions;
             document.getElementById('rejectedCount').textContent = statsData.data.rejectedTransactions;
             document.getElementById('todayCount').textContent = statsData.data.todayTransactions;
+            document.getElementById('todaySales').textContent = (statsData.data.todaySales || 0).toFixed(2);
         }
 
         const transResponse = await fetch(`${API_URL}/vendors/transactions?limit=10`, {
@@ -83,6 +84,7 @@ async function loadDashboard() {
                             <th>Liquor</th>
                             <th>Volume</th>
                             <th>Pure Alcohol</th>
+                            <th>Price</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -94,6 +96,7 @@ async function loadDashboard() {
                                 <td>${t.liquorType.name}</td>
                                 <td>${t.volumeMl}ml</td>
                                 <td>${t.pureAlcoholGrams.toFixed(2)}g</td>
+                                <td><strong>₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                 <td><span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">${t.status.toUpperCase()}</span></td>
                             </tr>
                         `).join('')}
@@ -203,6 +206,7 @@ async function lookupUser(userId) {
             document.getElementById('userConsumed').textContent = scannedUserData.consumedToday.toFixed(2) + 'g';
             document.getElementById('userLimit').textContent = scannedUserData.dailyLimit + 'g';
             document.getElementById('userRemaining').textContent = scannedUserData.remaining.toFixed(2) + 'g';
+            document.getElementById('userSpent').textContent = '₹' + (scannedUserData.totalSpentToday || 0).toFixed(2);
             
             if (scannedUserData.remaining <= 0) {
                 document.getElementById('userRemaining').className = 'text-danger';
@@ -238,8 +242,10 @@ function updateAlcoholCalculation() {
         const liquor = liquorTypes.find(l => l._id === liquorId);
         if (liquor) {
             const pureAlcohol = (volume * (liquor.alcoholPercentage / 100) * 0.789).toFixed(2);
+            const totalPrice = (volume * (liquor.pricePerUnit || 0)).toFixed(2);
             document.getElementById('calculationDisplay').style.display = 'block';
             document.getElementById('pureAlcoholCalc').textContent = pureAlcohol + 'g';
+            document.getElementById('totalPriceCalc').textContent = totalPrice;
         }
     } else {
         document.getElementById('calculationDisplay').style.display = 'none';
@@ -304,6 +310,10 @@ document.getElementById('purchaseForm').addEventListener('submit', async (e) => 
                                 <td><strong>${details.pureAlcoholGrams.toFixed(2)}g</strong></td>
                             </tr>
                             <tr>
+                                <th>Price:</th>
+                                <td><strong class="text-warning">₹${details.totalPrice}</strong> (₹${details.pricePerUnit}/ml)</td>
+                            </tr>
+                            <tr>
                                 <th>Previous Consumption:</th>
                                 <td>${details.previousConsumption.toFixed(2)}g</td>
                             </tr>
@@ -314,6 +324,10 @@ document.getElementById('purchaseForm').addEventListener('submit', async (e) => 
                             <tr>
                                 <th>Daily Limit:</th>
                                 <td>${details.dailyLimit}g</td>
+                            </tr>
+                            <tr>
+                                <th>Total Spent Today:</th>
+                                <td class="text-warning"><strong>₹${details.totalSpentToday.toFixed(2)}</strong></td>
                             </tr>
                             <tr>
                                 <th>Remaining:</th>
@@ -379,6 +393,7 @@ async function loadTransactions() {
                             <th>Liquor</th>
                             <th>Volume</th>
                             <th>Pure Alcohol</th>
+                            <th>Price</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -391,6 +406,7 @@ async function loadTransactions() {
                                 <td>${t.liquorType.name}<br><small class="text-muted">${t.alcoholPercentage}%</small></td>
                                 <td>${t.volumeMl}ml</td>
                                 <td><strong>${t.pureAlcoholGrams.toFixed(2)}g</strong></td>
+                                <td><strong class="text-warning">₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                 <td>
                                     <span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">
                                         ${t.status.toUpperCase()}

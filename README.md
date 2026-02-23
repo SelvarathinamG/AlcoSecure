@@ -1,4 +1,4 @@
-# EthanolTrack - QR-Based Alcohol Purchase Monitoring System
+# AlcoSecure - QR-Based Alcohol Purchase Monitoring System
 
 ![Project Status](https://img.shields.io/badge/status-production--ready-green)
 ![Node.js](https://img.shields.io/badge/node.js-v18+-blue)
@@ -25,13 +25,13 @@ A comprehensive, production-ready web application that tracks and regulates alco
 
 ## 🎯 Overview
 
-EthanolTrack is a responsible drinking initiative that uses technology to monitor and regulate alcohol consumption. By tracking pure alcohol intake using scientific formulas and enforcing daily limits, we promote healthier drinking habits while protecting user privacy.
+AlcoSecure is a responsible drinking initiative that uses technology to monitor and regulate alcohol consumption. By tracking pure alcohol intake using scientific formulas and enforcing daily limits, we promote healthier drinking habits while protecting user privacy.
 
 ### Key Highlights
 
 - **QR-Code Identity System**: Each user receives a unique QR code for secure purchases
 - **Scientific Tracking**: Uses the formula `Pure Alcohol (grams) = Volume (ml) × Alcohol % × 0.789`
-- **24-Hour Regulation**: Automatic daily consumption limits with reset functionality
+- **20-Hour Regulation**: Automatic consumption limits with reset functionality after 20 hours
 - **Real-time Monitoring**: Instant approval/rejection based on consumption limits
 - **Multi-Role System**: Separate interfaces for users, vendors, and administrators
 - **Privacy-First**: Aadhaar stored as SHA-256 hash for maximum security
@@ -84,7 +84,7 @@ EthanolTrack is a responsible drinking initiative that uses technology to monito
 ## 📁 Project Structure
 
 ```
-EthanolTrack/
+AlcoSecure/
 ├── config/
 │   └── database.js              # MongoDB connection configuration
 ├── models/
@@ -140,7 +140,7 @@ EthanolTrack/
 ### Step 1: Clone or Extract the Project
 
 ```bash
-cd EthanolTrack
+cd AlcoSecure
 ```
 
 ### Step 2: Install Dependencies
@@ -187,8 +187,8 @@ cp .env.example .env
 
 ```env
 # MongoDB Connection
-MONGODB_URI=mongodb://localhost:27017/ethanoltrack
-# Or for Atlas: mongodb+srv://username:password@cluster.mongodb.net/ethanoltrack
+MONGODB_URI=mongodb://localhost:27017/alcosecure
+# Or for Atlas: mongodb+srv://username:password@cluster.mongodb.net/alcosecure
 
 # JWT Secret Key (CHANGE THIS!)
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_asd89f7asdf89
@@ -222,7 +222,7 @@ npm run seed
 ```
 
 **Default Admin Credentials:**
-- Email: `admin@ethanoltrack.com`
+- Email: `admin@alcosecure.com`
 - Password: `admin123`
 
 **⚠️ Change the admin password immediately after first login in production!**
@@ -315,10 +315,10 @@ if (consumed_today + new_purchase > daily_limit) {
 }
 ```
 
-### 24-Hour Reset
+### 20-Hour Reset
 
 - Cron job runs every hour
-- Checks users whose `lastResetDate` > 24 hours ago
+- Checks users whose `lastResetDate` > 20 hours ago
 - Resets `consumedToday` to 0
 - Updates `lastResetDate` to current time
 
@@ -419,7 +419,7 @@ Unable to access camera
 After running `npm run seed`, you'll have:
 
 **Admin Account:**
-- Email: admin@ethanoltrack.com
+- Email: admin@alcosecure.com
 - Password: admin123
 
 **Sample Liquor Types:**
@@ -475,7 +475,7 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-For support, email support@ethanoltrack.com or open an issue in the repository.
+For support, email support@alcosecure.com or open an issue in the repository.
 
 ## 🗺️ Roadmap
 

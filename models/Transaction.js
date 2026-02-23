@@ -51,6 +51,14 @@ const transactionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  pricePerUnit: {
+    type: Number,
+    default: 0
+  },
+  totalPrice: {
+    type: Number,
+    default: 0
+  },
   timestamp: {
     type: Date,
     default: Date.now

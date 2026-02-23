@@ -65,6 +65,7 @@ router.post('/scan', protect, authorize('vendor'), async (req, res, next) => {
     // Check if reset is needed
     if (shouldResetConsumption(user.lastResetDate)) {
       user.consumedToday = 0;
+      user.totalSpentToday = 0;
       user.lastResetDate = new Date();
       await user.save();
     }
@@ -79,6 +80,7 @@ router.post('/scan', protect, authorize('vendor'), async (req, res, next) => {
         name: user.name,
         email: user.email,
         consumedToday: user.consumedToday,
+        totalSpentToday: user.totalSpentToday,
         dailyLimit: dailyLimit,
         remaining: Math.max(0, dailyLimit - user.consumedToday),
         lastResetDate: user.lastResetDate
@@ -142,6 +144,9 @@ router.post('/purchase', protect, authorize('vendor'), validatePurchase, async (
     // Calculate pure alcohol
     const pureAlcoholGrams = calculatePureAlcohol(volumeMl, liquorType.alcoholPercentage);
 
+    // Calculate total price
+    const totalPrice = volumeMl * liquorType.pricePerUnit;
+
     // Get daily limit
     const dailyLimit = await SystemConfig.getDailyLimit();
 
@@ -156,15 +161,18 @@ router.post('/purchase', protect, authorize('vendor'), validatePurchase, async (
       volumeMl: volumeMl,
       alcoholPercentage: liquorType.alcoholPercentage,
       pureAlcoholGrams: pureAlcoholGrams,
+      pricePerUnit: liquorType.pricePerUnit,
+      totalPrice: totalPrice,
       status: limitCheck.allowed ? 'approved' : 'rejected',
       rejectionReason: limitCheck.reason,
       consumedBeforePurchase: user.consumedToday,
       dailyLimitAtPurchase: dailyLimit
     });
 
-    // Update user consumption if approved
+    // Update user consumption and spending if approved
     if (limitCheck.allowed) {
       user.consumedToday += pureAlcoholGrams;
+      user.totalSpentToday += totalPrice;
       await user.save();
     }
 
@@ -184,8 +192,11 @@ router.post('/purchase', protect, authorize('vendor'), validatePurchase, async (
           volumeMl,
           alcoholPercentage: liquorType.alcoholPercentage,
           pureAlcoholGrams,
+          pricePerUnit: liquorType.pricePerUnit,
+          totalPrice: totalPrice.toFixed(2),
           previousConsumption: transaction.consumedBeforePurchase,
           newTotalConsumption: limitCheck.allowed ? user.consumedToday : transaction.consumedBeforePurchase,
+          totalSpentToday: limitCheck.allowed ? user.totalSpentToday : user.totalSpentToday - totalPrice,
           dailyLimit,
           remaining: limitCheck.remaining
         }
@@ -286,6 +297,25 @@ router.get('/stats', protect, authorize('vendor'), async (req, res, next) => {
       timestamp: { $gte: todayStart }
     });
 
+    // Calculate today's total sales revenue
+    const todaySalesResult = await Transaction.aggregate([
+      {
+        $match: {
+          vendor: req.user._id,
+          timestamp: { $gte: todayStart },
+          status: 'approved'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$totalPrice' }
+        }
+      }
+    ]);
+    
+    const todaySales = todaySalesResult.length > 0 ? todaySalesResult[0].totalSales : 0;
+
     res.status(200).json({
       success: true,
       data: {
@@ -293,6 +323,7 @@ router.get('/stats', protect, authorize('vendor'), async (req, res, next) => {
         approvedTransactions,
         rejectedTransactions,
         todayTransactions,
+        todaySales: todaySales,
         approvalRate: totalTransactions > 0 
           ? ((approvedTransactions / totalTransactions) * 100).toFixed(2) 
           : 0

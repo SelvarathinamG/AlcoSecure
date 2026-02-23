@@ -63,6 +63,7 @@ router.get('/consumption', protect, authorize('user'), async (req, res, next) =>
       success: true,
       data: {
         consumedToday: user.consumedToday,
+        totalSpentToday: user.totalSpentToday,
         dailyLimit: dailyLimit,
         remaining: Math.max(0, dailyLimit - user.consumedToday),
         lastResetDate: user.lastResetDate,

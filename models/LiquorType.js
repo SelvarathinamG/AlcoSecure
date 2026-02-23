@@ -27,6 +27,16 @@ const liquorTypeSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  pricePerUnit: {
+    type: Number,
+    default: 0,
+    min: [0, 'Price cannot be negative']
+  },
+  unit: {
+    type: String,
+    enum: ['ml', 'bottle', 'peg', 'glass'],
+    default: 'ml'
+  },
   isActive: {
     type: Boolean,
     default: true

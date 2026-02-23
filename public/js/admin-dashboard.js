@@ -74,6 +74,7 @@ async function loadDashboard() {
             document.getElementById('todayTransactions').textContent = today.transactions;
             document.getElementById('todayApproved').textContent = today.approved;
             document.getElementById('todayRejected').textContent = today.rejected;
+            document.getElementById('todaySales').textContent = (today.sales || 0).toFixed(2);
 
             const approvalProgress = document.getElementById('approvalProgress');
             approvalProgress.style.width = today.approvalRate + '%';
@@ -90,6 +91,7 @@ async function loadDashboard() {
                                 <th>Liquor</th>
                                 <th>Volume</th>
                                 <th>Pure Alcohol</th>
+                                <th>Price</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -102,6 +104,7 @@ async function loadDashboard() {
                                     <td>${t.liquorType.name}</td>
                                     <td>${t.volumeMl}ml</td>
                                     <td>${t.pureAlcoholGrams.toFixed(2)}g</td>
+                                    <td><strong>₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                     <td><span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">${t.status.toUpperCase()}</span></td>
                                 </tr>
                             `).join('')}
@@ -315,6 +318,7 @@ async function loadLiquorTypes() {
                             <th>Name</th>
                             <th>Category</th>
                             <th>Alcohol %</th>
+                            <th>Price/Unit</th>
                             <th>Description</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -327,6 +331,7 @@ async function loadLiquorTypes() {
                                 <td><strong>${l.name}</strong></td>
                                 <td><span class="badge bg-secondary">${l.category}</span></td>
                                 <td>${l.alcoholPercentage}%</td>
+                                <td>₹${l.pricePerUnit ? l.pricePerUnit.toFixed(2) : '0.00'}/${l.unit || 'ml'}</td>
                                 <td>${l.description || '-'}</td>
                                 <td>
                                     <span class="badge bg-${l.isActive ? 'success' : 'danger'}">
@@ -363,7 +368,9 @@ document.getElementById('addLiquorForm').addEventListener('submit', async (e) =>
         name: formData.get('name'),
         alcoholPercentage: parseFloat(formData.get('alcoholPercentage')),
         category: formData.get('category'),
-        description: formData.get('description')
+        description: formData.get('description'),
+        pricePerUnit: parseFloat(formData.get('pricePerUnit')) || 0,
+        unit: formData.get('unit') || 'ml'
     };
 
     try {
@@ -409,6 +416,8 @@ async function editLiquor(id) {
                 document.getElementById('editAlcoholPercentage').value = liquor.alcoholPercentage;
                 document.getElementById('editCategory').value = liquor.category;
                 document.getElementById('editDescription').value = liquor.description || '';
+                document.getElementById('editPricePerUnit').value = liquor.pricePerUnit || 0;
+                document.getElementById('editUnit').value = liquor.unit || 'ml';
                 document.getElementById('editIsActive').checked = liquor.isActive;
 
                 const modal = new bootstrap.Modal(document.getElementById('editLiquorModal'));
@@ -430,6 +439,8 @@ document.getElementById('editLiquorForm').addEventListener('submit', async (e) =
         alcoholPercentage: parseFloat(document.getElementById('editAlcoholPercentage').value),
         category: document.getElementById('editCategory').value,
         description: document.getElementById('editDescription').value,
+        pricePerUnit: parseFloat(document.getElementById('editPricePerUnit').value) || 0,
+        unit: document.getElementById('editUnit').value || 'ml',
         isActive: document.getElementById('editIsActive').checked
     };
 
@@ -511,6 +522,7 @@ async function loadTransactions() {
                             <th>Liquor</th>
                             <th>Volume</th>
                             <th>Pure Alcohol</th>
+                            <th>Price</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -524,6 +536,7 @@ async function loadTransactions() {
                                 <td>${t.liquorType.name}<br><small class="text-muted">${t.alcoholPercentage}%</small></td>
                                 <td>${t.volumeMl}ml</td>
                                 <td><strong>${t.pureAlcoholGrams.toFixed(2)}g</strong></td>
+                                <td><strong class="text-warning">₹${(t.totalPrice || 0).toFixed(2)}</strong></td>
                                 <td>
                                     <span class="badge bg-${t.status === 'approved' ? 'success' : 'danger'}">
                                         ${t.status.toUpperCase()}

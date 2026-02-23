@@ -40,7 +40,7 @@ systemConfigSchema.statics.getDailyLimit = async function() {
     config = await this.create({
       configKey: 'dailyAlcoholLimit',
       configValue: parseFloat(process.env.DEFAULT_DAILY_LIMIT) || 60,
-      description: 'Maximum grams of pure alcohol allowed per user per 24 hours'
+      description: 'Maximum grams of pure alcohol allowed per user per 20 hours'
     });
   }
   

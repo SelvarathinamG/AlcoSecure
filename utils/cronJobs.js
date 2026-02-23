@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const User = require('../models/User');
 
 /**
- * Reset consumption for users whose 24 hours have passed
+ * Reset consumption for users whose 20 hours have passed
  * Runs every hour to check and reset
  */
 const startDailyResetJob = () => {
@@ -17,17 +17,21 @@ const startDailyResetJob = () => {
       console.log('🔄 Running daily consumption reset check...');
 
       const now = new Date();
-      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const twentyHoursAgo = new Date(now.getTime() - 20 * 60 * 60 * 1000);
 
-      // Find users whose last reset was more than 24 hours ago
+      // Find users whose last reset was more than 20 hours ago
       const result = await User.updateMany(
         {
-          lastResetDate: { $lte: twentyFourHoursAgo },
-          consumedToday: { $gt: 0 }
+          lastResetDate: { $lte: twentyHoursAgo },
+          $or: [
+            { consumedToday: { $gt: 0 } },
+            { totalSpentToday: { $gt: 0 } }
+          ]
         },
         {
           $set: {
             consumedToday: 0,
+            totalSpentToday: 0,
             lastResetDate: now
           }
         }

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - EthanolTrack</title>
+    <title>Admin Dashboard - AlcoSecure</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-user-shield"></i> EthanolTrack Admin
+                <i class="fas fa-user-shield"></i> AlcoSecure Admin
             </a>
             <div class="navbar-text text-white me-3">
                 <i class="fas fa-user-circle"></i> <span id="adminName"></span>
@@ -105,17 +105,21 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row text-center">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <h3 id="todayTransactions">0</h3>
                                             <p class="text-muted">Transactions</p>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <h3 id="todayApproved" class="text-success">0</h3>
                                             <p class="text-muted">Approved</p>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <h3 id="todayRejected" class="text-danger">0</h3>
                                             <p class="text-muted">Rejected</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h2 class="text-warning">₹<span id="todaySales">0.00</span></h2>
+                                            <p class="text-muted">Revenue</p>
                                         </div>
                                     </div>
                                     <div class="progress" style="height: 25px;">
@@ -275,7 +279,7 @@
                                     <h5 class="mb-0"><i class="fas fa-sliders-h"></i> Daily Alcohol Limit</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p class="text-muted">Set the maximum grams of pure alcohol allowed per user per 24 hours.</p>
+                                    <p class="text-muted">Set the maximum grams of pure alcohol allowed per user per 20 hours.</p>
                                     <form id="limitForm">
                                         <div class="mb-3">
                                             <label class="form-label">Current Daily Limit:</label>
@@ -359,6 +363,21 @@
                             <label class="form-label">Description</label>
                             <textarea class="form-control" name="description" rows="2"></textarea>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price Per Unit (₹) *</label>
+                                <input type="number" class="form-control" name="pricePerUnit" min="0" step="0.01" value="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Unit *</label>
+                                <select class="form-select" name="unit" required>
+                                    <option value="ml">ml</option>
+                                    <option value="bottle">Bottle</option>
+                                    <option value="peg">Peg</option>
+                                    <option value="glass">Glass</option>
+                                </select>
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-success w-100">
                             <i class="fas fa-plus"></i> Add Liquor Type
                         </button>
@@ -405,6 +424,21 @@
                         <div class="mb-3">
                             <label class="form-label">Description</label>
                             <textarea class="form-control" id="editDescription" rows="2"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price Per Unit (₹) *</label>
+                                <input type="number" class="form-control" id="editPricePerUnit" min="0" step="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Unit *</label>
+                                <select class="form-select" id="editUnit" required>
+                                    <option value="ml">ml</option>
+                                    <option value="bottle">Bottle</option>
+                                    <option value="peg">Peg</option>
+                                    <option value="glass">Glass</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <div class="form-check form-switch">

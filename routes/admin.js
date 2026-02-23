@@ -45,6 +45,24 @@ router.get('/dashboard', protect, authorize('admin'), async (req, res, next) => 
       status: 'rejected'
     });
 
+    // Calculate today's total sales revenue
+    const todaySalesResult = await Transaction.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: todayStart },
+          status: 'approved'
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$totalPrice' }
+        }
+      }
+    ]);
+    
+    const todaySales = todaySalesResult.length > 0 ? todaySalesResult[0].totalSales : 0;
+
     // Get recent transactions
     const recentTransactions = await Transaction.find()
       .populate('user', 'name userId')
@@ -70,6 +88,7 @@ router.get('/dashboard', protect, authorize('admin'), async (req, res, next) => 
           transactions: todayTransactions,
           approved: todayApproved,
           rejected: todayRejected,
+          sales: todaySales,
           approvalRate: todayTransactions > 0 
             ? ((todayApproved / todayTransactions) * 100).toFixed(2) 
             : 0
@@ -232,13 +251,15 @@ router.get('/liquor-types', protect, authorize('admin'), async (req, res, next) 
  */
 router.post('/liquor-types', protect, authorize('admin'), validateLiquorType, async (req, res, next) => {
   try {
-    const { name, alcoholPercentage, category, description } = req.body;
+    const { name, alcoholPercentage, category, description, pricePerUnit, unit } = req.body;
 
     const liquorType = await LiquorType.create({
       name,
       alcoholPercentage,
       category,
-      description
+      description,
+      pricePerUnit: pricePerUnit || 0,
+      unit: unit || 'ml'
     });
 
     res.status(201).json({
@@ -257,11 +278,11 @@ router.post('/liquor-types', protect, authorize('admin'), validateLiquorType, as
  */
 router.put('/liquor-types/:id', protect, authorize('admin'), async (req, res, next) => {
   try {
-    const { name, alcoholPercentage, category, description, isActive } = req.body;
+    const { name, alcoholPercentage, category, description, isActive, pricePerUnit, unit } = req.body;
 
     const liquorType = await LiquorType.findByIdAndUpdate(
       req.params.id,
-      { name, alcoholPercentage, category, description, isActive },
+      { name, alcoholPercentage, category, description, isActive, pricePerUnit, unit },
       { new: true, runValidators: true }
     );
 

@@ -1,5 +1,5 @@
 {
-  "name": "ethanoltrack-qr-alcohol-monitoring",
+  "name": "alcosecure-qr-alcohol-monitoring",
   "version": "1.0.0",
   "description": "QR-Based Alcohol Purchase Monitoring and Accountability System",
   "main": "server.js",
