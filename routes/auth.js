@@ -8,6 +8,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Vendor = require('../models/Vendor');
 const Admin = require('../models/Admin');
+const Aadhaar = require('../models/Aadhaar');
 const { sendTokenResponse } = require('../utils/jwtToken');
 const { generateQRCode } = require('../utils/qrCode');
 const { hashAadhaar } = require('../utils/aadhaarHash');
@@ -24,7 +25,19 @@ const {
  */
 router.post('/user/register', validateUserRegistration, async (req, res, next) => {
   try {
-    const { name, email, password, aadhaar } = req.body;
+    const { name, email, password, aadhaar, mobile } = req.body;
+
+    // Verify Aadhaar data against database
+    const verification = await Aadhaar.verifyAadhaarData(aadhaar, email, mobile);
+    
+    if (!verification.valid) {
+      return res.status(400).json({
+        success: false,
+        message: verification.message,
+        isUnderage: verification.isUnderage || false,
+        age: verification.age
+      });
+    }
 
     // Hash Aadhaar for secure storage
     const aadhaarHash = hashAadhaar(aadhaar);

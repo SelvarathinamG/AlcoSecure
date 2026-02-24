@@ -225,6 +225,11 @@
                                     <input type="email" class="form-control" name="email" required>
                                 </div>
                                 <div class="mb-3">
+                                    <label class="form-label">Mobile Number</label>
+                                    <input type="text" class="form-control" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
+                                    <small class="text-muted">10-digit mobile number (must match Aadhaar records)</small>
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label">Password</label>
                                     <input type="password" class="form-control" name="password" minlength="6" required>
                                 </div>

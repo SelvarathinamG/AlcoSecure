@@ -33,6 +33,10 @@ const validateUserRegistration = [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email'),
+  body('mobile')
+    .trim()
+    .matches(/^[0-9]{10}$/)
+    .withMessage('Mobile number must be exactly 10 digits'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters'),

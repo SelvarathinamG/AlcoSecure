@@ -14,9 +14,6 @@ const { startDailyResetJob } = require('./utils/cronJobs');
 // Initialize Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -60,13 +57,19 @@ app.get('/admin-dashboard', (req, res) => {
 // Error handler middleware (must be last)
 app.use(errorHandler);
 
-// Start cron jobs
-startDailyResetJob();
+// Start server function
+const startServer = async () => {
+  try {
+    // Connect to MongoDB first
+    await connectDB();
 
-// Start server
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`
+    // Start cron jobs after DB connection
+    startDailyResetJob();
+
+    // Start server
+    const PORT = process.env.PORT || 5000;
+    const server = app.listen(PORT, () => {
+      console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
 ║        🍺 AlcoSecure Server Running 🍺                ║
@@ -76,13 +79,22 @@ const server = app.listen(PORT, () => {
 ║   URL: http://localhost:${PORT}                       ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
-  `);
-});
+      `);
+    });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error(`❌ Unhandled Rejection: ${err.message}`);
-  server.close(() => process.exit(1));
-});
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (err) => {
+      console.error(`❌ Unhandled Rejection: ${err.message}`);
+      server.close(() => process.exit(1));
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
 
 module.exports = app;

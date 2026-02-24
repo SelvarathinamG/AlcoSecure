@@ -494,3 +494,6 @@ For support, email support@alcosecure.com or open an issue in the repository.
 **Made with ❤️ for responsible drinking**
 
 **Remember: Drink responsibly, Stay healthy!**
+git status
+git commit -m "Update README documentation"
+git push origin main

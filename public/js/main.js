@@ -47,6 +47,7 @@ document.getElementById('userRegisterForm').addEventListener('submit', async (e)
     const data = {
         name: formData.get('name'),
         email: formData.get('email'),
+        mobile: formData.get('mobile'),
         password: formData.get('password'),
         aadhaar: formData.get('aadhaar')
     };
@@ -69,7 +70,12 @@ document.getElementById('userRegisterForm').addEventListener('submit', async (e)
                 window.location.href = '/user-dashboard';
             }, 1000);
         } else {
-            showMessage('userMessage', 'danger', result.message || 'Registration failed');
+            // Check if user is underage
+            if (result.isUnderage) {
+                showUnderageWarning(result.message, result.age);
+            } else {
+                showMessage('userMessage', 'danger', result.message || 'Registration failed');
+            }
         }
     } catch (error) {
         console.error('Error:', error);
@@ -196,4 +202,47 @@ function showMessage(elementId, type, message) {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
+}
+
+// Helper function to show underage warning modal
+function showUnderageWarning(message, age) {
+    // Create modal HTML if it doesn't exist
+    let modal = document.getElementById('underageWarningModal');
+    if (!modal) {
+        const modalHTML = `
+            <div class="modal fade" id="underageWarningModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-danger">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exclamation-triangle"></i> Age Restriction Warning
+                            </h5>
+                        </div>
+                        <div class="modal-body text-center py-4">
+                            <i class="fas fa-ban fa-4x text-danger mb-3"></i>
+                            <h4 class="mb-3" id="underageMessage">Registration Not Allowed</h4>
+                            <p class="lead mb-2" id="underageDetails"></p>
+                            <p class="text-muted">You must be at least 18 years old to register for AlcoSecure.</p>
+                            <div class="alert alert-warning mt-3">
+                                <strong>Legal Drinking Age:</strong> Only individuals of legal drinking age are permitted to use this system.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        modal = document.getElementById('underageWarningModal');
+    }
+    
+    // Update modal content
+    document.getElementById('underageMessage').textContent = message;
+    document.getElementById('underageDetails').textContent = age ? `Your current age: ${age} years` : '';
+    
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 }
